@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Quản Lý Cửa Hàng Văn Phòng Phẩm</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabSales">
+      <attribute name="title">
+       <string>Bán Hàng</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabInventory">
+      <attribute name="title">
+       <string>Quản Lý Nhân Viên</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabProducts">
+      <attribute name="title">
+       <string>Quản Lý Sản Phẩm</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabCustomers">
+      <attribute name="title">
+       <string>Quản Lý Khách Hàng</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabOrders">
+      <attribute name="title">
+       <string>Quản Lý Đơn Hàng</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabStatistics">
+      <attribute name="title">
+       <string>Thống Kê</string>
+      </attribute>
+     </widget>
+    </widget>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+</ui>

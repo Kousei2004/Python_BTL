@@ -1,0 +1,98 @@
+-- 1. Tạo database
+    CREATE database quanlyvanphongpham;
+    USE quanlyvanphongpham;
+
+    -- 2. Bảng sản phẩm
+    CREATE TABLE sanpham (
+        maSP INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        tenSP VARCHAR(255) NOT NULL,
+        danhMuc VARCHAR(50),
+        nhaCungCap VARCHAR(255),
+        giaNhap DECIMAL(10,2) NOT NULL,
+        giaBan DECIMAL(10,2) NOT NULL,
+        tonKho INT NOT NULL,
+        hinhAnh VARCHAR(255)
+    );
+
+-- 3. Bảng khách hàng
+CREATE TABLE khachhang (
+    maKH INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    tenKH VARCHAR(255) NOT NULL,
+    sdt VARCHAR(15),
+    email VARCHAR(255),
+    diaChi TEXT,
+    hangThanhVien ENUM('Thường', 'Bạc', 'Vàng', 'Kim Cương') DEFAULT 'Thường',
+    diemTichLuy INT DEFAULT 0
+);
+
+-- 4. Bảng nhân viên
+CREATE TABLE nhanvien (
+    maNV INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    tenNV VARCHAR(255) NOT NULL,
+    chucVu VARCHAR(100),
+    sdt VARCHAR(15),
+    email VARCHAR(255),
+    diaChi VARCHAR(100),
+    luong DECIMAL(10,2)
+);
+
+-- 5. Bảng đơn hàng
+CREATE TABLE donhang (
+    maDH INT AUTO_INCREMENT PRIMARY KEY,
+    maKH INT,
+    maNV INT,
+    ngayDat DATE DEFAULT (CURRENT_DATE),
+    tongTien DECIMAL(10,2) NOT NULL,
+    trangThai ENUM('Chờ xử lý', 'Đang xử lý', 'Đã giao hàng', 'Đã hủy') DEFAULT 'Chờ xử lý',
+    phuongThucThanhToan ENUM('Tiền mặt', 'Chuyển khoản', 'Thẻ tín dụng') DEFAULT 'Tiền mặt',
+    FOREIGN KEY (maKH) REFERENCES khachhang(maKH) ON DELETE SET NULL,
+    FOREIGN KEY (maNV) REFERENCES nhanvien(maNV) ON DELETE SET NULL
+);
+
+-- 6. Bảng chi tiết hóa đơn
+CREATE TABLE chitiethoadon (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    maDH INT,
+    maSP INT,
+    soLuong INT NOT NULL,
+    donGia DECIMAL(10,2),
+    thanhTien DECIMAL(10,2),
+    loiNhuan DECIMAL(10,2),
+    FOREIGN KEY (maDH) REFERENCES donhang(maDH) ON DELETE CASCADE,
+    FOREIGN KEY (maSP) REFERENCES sanpham(maSP) ON DELETE CASCADE
+);
+
+-- 8. Bảng tài khoản người dùng
+CREATE TABLE users (
+    userID INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role enum('Admin', 'Nhanvien')
+);
+//TRIGGER
+DELIMITER //
+CREATE TRIGGER cap_nhat_hang_thanh_vien
+AFTER INSERT ON donhang
+FOR EACH ROW
+BEGIN
+    DECLARE tongChiTieu DECIMAL(15,2);
+
+    -- Tính tổng tiền đã chi tiêu của khách hàng
+    SELECT SUM(tongTien) INTO tongChiTieu
+    FROM donhang
+    WHERE maKH = NEW.maKH;
+
+    -- Cập nhật hạng thành viên dựa trên tổng chi tiêu
+    UPDATE khachhang
+    SET hangThanhVien = 
+        CASE 
+            WHEN tongChiTieu >= 20000000 THEN 'Kim Cương'
+            WHEN tongChiTieu >= 10000000 THEN 'Vàng'
+            WHEN tongChiTieu >= 5000000 THEN 'Bạc'
+            ELSE 'Thường'
+        END
+    WHERE maKH = NEW.maKH;
+END;
+//
+DELIMITER ;
